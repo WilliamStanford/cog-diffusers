@@ -134,7 +134,7 @@ class Predictor(BasePredictor):
         image.save(output_path)
 
         if prompt is not None:
-            latent = self.pipe._encode_prompt
+            latent = self.pipe._encode_prompt(prompt, "cuda", 1, False)
             latent_path = f"/tmp/out.npy"
             np.save(latent_path, latent)
         else:
