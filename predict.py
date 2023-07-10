@@ -3,6 +3,7 @@ from typing import List
 import numpy as np
 import pickle 
 import io
+import re
 
 import torch
 from cog import BasePredictor, Input, Path, File
@@ -129,15 +130,15 @@ class Predictor(BasePredictor):
         )
         
         image = output.images[0]
-        output_path = f"/tmp/out-{i}.png"
+        output_path = f"/tmp/out.png"
         image.save(output_path)
 
         if prompt is not None:
             latent = self.pipe._encode_prompt
-            latent_path = f"/tmp/out-{i}.npy"
+            latent_path = f"/tmp/out.npy"
             np.save(latent_path, latent)
         else:
-            latent_path = f"/tmp/out-{i}.npy"
+            latent_path = f"/tmp/out.npy"
             np.save(latent_path, prompt_embedding)
             
         return output_path, latent_path
