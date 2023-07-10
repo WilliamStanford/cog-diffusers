@@ -105,8 +105,8 @@ class Predictor(BasePredictor):
 
         self.pipe.scheduler = make_scheduler(scheduler, self.pipe.scheduler.config)
 
-        #with open('path/to/file', 'rb') as file:
-        #    file_stream = io.BytesIO(file.read())
+        # stream = io.BytesIO()
+        # pickle.dump(array, stream)
 
         # Need to decode prompt embedding, saved with io.IOBase
         if prompt_embedding is not None:
