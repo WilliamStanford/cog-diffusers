@@ -1,9 +1,11 @@
 import os
 from typing import List
 import numpy as np
+import pickle 
+import io
 
 import torch
-from cog import BasePredictor, Input, Path
+from cog import BasePredictor, Input, Path, File
 from diffusers import (
     StableDiffusionPipeline,
     PNDMScheduler,
@@ -43,8 +45,12 @@ class Predictor(BasePredictor):
         self,
         prompt: str = Input(
             description="Input prompt",
-            default="a photo of an astronaut riding a horse on mars",
+            default=None,
         ),
+        prompt_embedding: cog.File = Input(
+            "prompt already embedded into CLIP latent space",
+            default=None,
+            
         negative_prompt: str = Input(
             description="Specify things to not see in the output",
             default=None,
@@ -72,7 +78,7 @@ class Predictor(BasePredictor):
             description="Scale for classifier-free guidance", ge=1, le=20, default=7.5
         ),
         scheduler: str = Input(
-            default="DPMSolverMultistep",
+            default="K_EULER_ANCESTRAL",
             choices=[
                 "DDIM",
                 "K_EULER",
@@ -84,7 +90,7 @@ class Predictor(BasePredictor):
             description="Choose a scheduler.",
         ),
         seed: int = Input(
-            description="Random seed. Leave blank to randomize the seed", default=None
+            description="Random seed. Leave blank to randomize the seed", default=0
         ),
     ) -> List[Path]:
         """Run a single prediction on the model"""
@@ -99,12 +105,18 @@ class Predictor(BasePredictor):
 
         self.pipe.scheduler = make_scheduler(scheduler, self.pipe.scheduler.config)
 
+        #with open('path/to/file', 'rb') as file:
+        #    file_stream = io.BytesIO(file.read())
+
+        # Need to decode prompt embedding, saved with io.IOBase
+        if prompt_embedding is not None:
+            prompt_embedding = pickle.load(prompt_embedding)
+
         generator = torch.Generator("cuda").manual_seed(seed)
         output = self.pipe(
             prompt=[prompt] * num_outputs if prompt is not None else None,
-            negative_prompt=[negative_prompt] * num_outputs
-            if negative_prompt is not None
-            else None,
+            prompt_embeds=prompt_embedding if prompt_embedding is not None else None,
+            negative_prompt=[negative_prompt] * num_outputs if negative_prompt is not None else None,
             width=width,
             height=height,
             guidance_scale=guidance_scale,
@@ -116,10 +128,14 @@ class Predictor(BasePredictor):
         output_path = f"/tmp/out-{i}.png"
         image.save(output_path)
 
-        latent = self.pipe._encode_prompt
-        latent_path = f"/tmp/out-{i}.npy"
-        np.save(latent_path, latent)
-
+        if prompt is not None:
+            latent = self.pipe._encode_prompt
+            latent_path = f"/tmp/out-{i}.npy"
+            np.save(latent_path, latent)
+        else:
+            latent_path = f"/tmp/out-{i}.npy"
+            np.save(latent_path, prompt_embedding)
+            
         return output_path, latent_path
 
 
