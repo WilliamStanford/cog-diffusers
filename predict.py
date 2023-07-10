@@ -1,5 +1,6 @@
 import os
 from typing import List
+import numpy as np
 
 import torch
 from cog import BasePredictor, Input, Path
@@ -111,22 +112,16 @@ class Predictor(BasePredictor):
             generator=generator,
             num_inference_steps=num_inference_steps,
         )
+        
+        image = output.images[0]
+        output_path = f"/tmp/out-{i}.png"
+        image.save(output_path)
 
-        output_paths = []
-        for i, sample in enumerate(output.images):
-            if output.nsfw_content_detected and output.nsfw_content_detected[i]:
-                continue
+        latent_path = f"/tmp/out-{i}.npy"
+        np.save(latent_path, latent)
 
-            output_path = f"/tmp/out-{i}.png"
-            sample.save(output_path)
-            output_paths.append(Path(output_path))
+        return output_path, latent_path
 
-        if len(output_paths) == 0:
-            raise Exception(
-                f"NSFW content detected. Try running it again, or try a different prompt."
-            )
-
-        return output_paths
 
 
 def make_scheduler(name, config):
