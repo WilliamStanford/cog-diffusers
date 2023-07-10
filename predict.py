@@ -6,6 +6,8 @@ import io
 
 import torch
 from cog import BasePredictor, Input, Path, File
+import cog
+
 from diffusers import (
     StableDiffusionPipeline,
     PNDMScheduler,
