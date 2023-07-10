@@ -117,6 +117,7 @@ class Predictor(BasePredictor):
         output_path = f"/tmp/out-{i}.png"
         image.save(output_path)
 
+        latent = self.pipe._encode_prompt
         latent_path = f"/tmp/out-{i}.npy"
         np.save(latent_path, latent)
 
