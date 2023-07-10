@@ -10,6 +10,7 @@ import cog
 
 from diffusers import (
     StableDiffusionPipeline,
+    StableDiffusionImg2ImgPipeline,
     PNDMScheduler,
     LMSDiscreteScheduler,
     DDIMScheduler,
@@ -34,10 +35,11 @@ class Predictor(BasePredictor):
         """Load the model into memory to make running multiple predictions efficient"""
         print("Loading pipeline...")
 
-        self.pipe = StableDiffusionPipeline.from_pretrained(
+        self.pipe = StableDiffusionImg2ImgPipeline.from_pretrained(
             MODEL_ID,
             cache_dir=MODEL_CACHE,
             local_files_only=True,
+            torch_dtype=torch.float16,
         ).to("cuda")
 
         self.pipe.safety_checker = dummy
