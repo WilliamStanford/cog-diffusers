@@ -4,7 +4,7 @@ import os
 import shutil
 import sys
 
-from diffusers import StableDiffusionPipeline
+from diffusers import StableDiffusionPipeline, StableDiffusionImg2ImgPipeline
 from diffusers.pipelines.stable_diffusion.safety_checker import \
     StableDiffusionSafetyChecker
 
@@ -18,7 +18,7 @@ if os.path.exists(MODEL_CACHE):
 os.makedirs(MODEL_CACHE, exist_ok=True)
 
 
-pipe = StableDiffusionPipeline.from_pretrained(
+pipe = StableDiffusionImg2ImgPipeline.from_pretrained(
     MODEL_ID,
     cache_dir=MODEL_CACHE,
 )
