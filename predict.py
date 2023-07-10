@@ -50,7 +50,7 @@ class Predictor(BasePredictor):
         prompt_embedding: cog.File = Input(
             "prompt already embedded into CLIP latent space",
             default=None,
-            
+        ),    
         negative_prompt: str = Input(
             description="Specify things to not see in the output",
             default=None,
