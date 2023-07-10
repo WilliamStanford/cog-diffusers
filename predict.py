@@ -48,7 +48,7 @@ class Predictor(BasePredictor):
             default=None,
         ),
         prompt_embedding: cog.File = Input(
-            descriptions="prompt already embedded into CLIP latent space",
+            description="prompt already embedded into CLIP latent space",
             default=None,
         ),    
         negative_prompt: str = Input(
