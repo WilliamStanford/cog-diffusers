@@ -18,7 +18,7 @@ if os.path.exists(MODEL_CACHE):
 os.makedirs(MODEL_CACHE, exist_ok=True)
 
 
-pipe = StableDiffusionImg2ImgPipeline.from_pretrained(
+pipe = StableDiffusionPipeline.from_pretrained(
     MODEL_ID,
     cache_dir=MODEL_CACHE,
 )
