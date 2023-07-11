@@ -112,7 +112,7 @@ class Predictor(BasePredictor):
 
         if prompt_embedding is not None:
             prompt = None
-            prompt_ebedding = torch.load(prompt_embedding)
+            prompt_embedding = torch.load(prompt_embedding)
             latent = prompt_embedding
 
         generator = torch.Generator("cuda").manual_seed(seed)
