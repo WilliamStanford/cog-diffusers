@@ -130,12 +130,12 @@ class Predictor(BasePredictor):
         )
         
         image = output.images[0]
-        output_path = f"/tmp/out.png"
+        output_path = "/tmp/out.png"
         image.save(output_path)
 
         #if prompt is not None:
         latent = self.pipe._encode_prompt(prompt, "cuda", 1, False)
-        latent_path = f"/tmp/out.pt"
+        latent_path = "/tmp/out.pt"
         torch.save(latent.cpu(), latent_path)
         
         #else:
