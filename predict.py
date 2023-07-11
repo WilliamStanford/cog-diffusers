@@ -129,21 +129,21 @@ class Predictor(BasePredictor):
             num_inference_steps=num_inference_steps,
         )
         
-        image = output.images[0]
-        output_path = "/tmp/out.png"
-        image.save(output_path)
-
         #if prompt is not None:
         latent = self.pipe._encode_prompt(prompt, "cuda", 1, False)
-        latent_path = "/tmp/out.pt"
-        torch.save(latent.cpu(), latent_path)
-        
-        #else:
-        #    latent_path = f"/tmp/out.pt"
-        #    torch.save(prompt_embedding.cpu(), latent_path)
-        #    latent = prompt_embedding
 
-        return image, latent
+        output_paths = []
+        for i, sample in enumerate(output.images):
+            output_path = f"/tmp/out-{i}.png"
+            latent_path = f"/tmp/out-{i}.pt"
+            sample.save(output_path)
+            torch.save(latent.cpu(), latent_path)
+            output_paths.append(Path(output_path))
+            output_paths.append(Path(latent_path))
+
+        return output_paths
+        
+
 
 
 
