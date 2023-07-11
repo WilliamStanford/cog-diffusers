@@ -50,7 +50,7 @@ class Predictor(BasePredictor):
         self,
         prompt: str = Input(
             description="Input prompt",
-            default="sci fi portal to another dimension, digital art, masterpiece, epic fantasy alien landscape",
+            default="sci fi portal to another dimension, digital art, masterpiece, epic fantasy alien landscape, imagined by agnes pelton, scifi utopia",
         ),
         prompt_embedding: Path = Input(
             description="prompt already embedded into CLIP latent space",
