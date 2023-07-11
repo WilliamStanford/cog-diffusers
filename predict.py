@@ -52,10 +52,10 @@ class Predictor(BasePredictor):
             description="Input prompt",
             default="sci fi portal to another dimension, digital art, masterpiece, epic fantasy alien landscape",
         ),
-        #prompt_embedding: Path = Input(
-        #    description="prompt already embedded into CLIP latent space",
-        #    default=None,
-        #),    
+        prompt_embedding: Path = Input(
+            description="prompt already embedded into CLIP latent space",
+            default=None,
+        ),    
         negative_prompt: str = Input(
             description="Specify things to not see in the output",
             default=None,
@@ -110,17 +110,10 @@ class Predictor(BasePredictor):
 
         self.pipe.scheduler = make_scheduler(scheduler, self.pipe.scheduler.config)
 
-        # stream = io.BytesIO()
-        # pickle.dump(array, stream)
-
-        # Need to decode prompt embedding, saved with io.IOBase
-        #if prompt_embedding is not None:
-        #    prompt_embedding = pickle.load(prompt_embedding)
-
         generator = torch.Generator("cuda").manual_seed(seed)
         output = self.pipe(
             prompt=[prompt] * num_outputs if prompt is not None else None,
-            #prompt_embeds=prompt_embedding if prompt_embedding is not None else None,
+            prompt_embeds=torch.load(prompt_embedding) if prompt_embedding is not None else None,
             negative_prompt=[negative_prompt] * num_outputs if negative_prompt is not None else None,
             width=width,
             height=height,
@@ -129,8 +122,10 @@ class Predictor(BasePredictor):
             num_inference_steps=num_inference_steps,
         )
         
-        #if prompt is not None:
-        latent = self.pipe._encode_prompt(prompt, "cuda", 1, False)
+        if prompt is not None and prompt is not "":
+            latent = self.pipe._encode_prompt(prompt, "cuda", 1, False)
+        else:
+            latent = torch.load(prompt_embedding) 
 
         output_paths = []
         for i, sample in enumerate(output.images):
