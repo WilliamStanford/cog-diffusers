@@ -50,7 +50,7 @@ class Predictor(BasePredictor):
         self,
         prompt: str = Input(
             description="Input prompt",
-            default=None,
+            default="sci fi portal to another dimension, digital art, masterpiece, epic fantasy alien landscape",
         ),
         #prompt_embedding: cog.File = Input(
         #    description="prompt already embedded into CLIP latent space",
