@@ -52,10 +52,6 @@ class Predictor(BasePredictor):
             description="Input prompt",
             default="sci fi portal to another dimension, digital art, masterpiece, epic fantasy alien landscape, imagined by agnes pelton, scifi utopia",
         ),
-        prompt_embedding: Path = Input(
-            description="prompt already embedded into CLIP latent space",
-            default=None,
-        ),    
         negative_prompt: str = Input(
             description="Specify things to not see in the output",
             default=None,
@@ -110,15 +106,10 @@ class Predictor(BasePredictor):
 
         self.pipe.scheduler = make_scheduler(scheduler, self.pipe.scheduler.config)
 
-        if prompt_embedding is not None:
-            prompt = None
-            prompt_embedding = torch.load(prompt_embedding)
-
 
         generator = torch.Generator("cuda").manual_seed(seed)
         output = self.pipe(
             prompt=[prompt] * num_outputs if prompt is not None else None,
-            prompt_embeds=prompt_embedding,
             negative_prompt=[negative_prompt] * num_outputs if negative_prompt is not None else None,
             width=width,
             height=height,
@@ -127,9 +118,6 @@ class Predictor(BasePredictor):
             num_inference_steps=num_inference_steps,
         )
         
-        if prompt is not None:
-            prompt_embedding = self.pipe._encode_prompt(prompt, "cuda", 1, False)
-
         output_paths = []
         for i, sample in enumerate(output.images):
             output_path = f"/tmp/out-{i}.png"
