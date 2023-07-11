@@ -117,6 +117,8 @@ class Predictor(BasePredictor):
             generator=generator,
             num_inference_steps=num_inference_steps,
         )
+
+        prompt_embedding = self.pipe._encode_prompt(prompt, "cuda", 1, False)
         
         output_paths = []
         for i, sample in enumerate(output.images):
