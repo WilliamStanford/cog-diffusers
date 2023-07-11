@@ -52,13 +52,13 @@ class Predictor(BasePredictor):
             description="Input prompt",
             default=None,
         ),
-        prompt_embedding: cog.File = Input(
-            description="prompt already embedded into CLIP latent space",
-            default=None,
-        ),    
+        #prompt_embedding: cog.File = Input(
+        #    description="prompt already embedded into CLIP latent space",
+        #    default=None,
+        #),    
         negative_prompt: str = Input(
             description="Specify things to not see in the output",
-            default=None,
+            default="",
         ),
         width: int = Input(
             description="Width of output image. Maximum size is 1024x768 or 768x1024 because of memory limits",
@@ -77,7 +77,7 @@ class Predictor(BasePredictor):
             default=1,
         ),
         num_inference_steps: int = Input(
-            description="Number of denoising steps", ge=1, le=500, default=50
+            description="Number of denoising steps", ge=1, le=500, default=30
         ),
         guidance_scale: float = Input(
             description="Scale for classifier-free guidance", ge=1, le=20, default=7.5
@@ -114,13 +114,13 @@ class Predictor(BasePredictor):
         # pickle.dump(array, stream)
 
         # Need to decode prompt embedding, saved with io.IOBase
-        if prompt_embedding is not None:
-            prompt_embedding = pickle.load(prompt_embedding)
+        #if prompt_embedding is not None:
+        #    prompt_embedding = pickle.load(prompt_embedding)
 
         generator = torch.Generator("cuda").manual_seed(seed)
         output = self.pipe(
             prompt=[prompt] * num_outputs if prompt is not None else None,
-            prompt_embeds=prompt_embedding if prompt_embedding is not None else None,
+            #prompt_embeds=prompt_embedding if prompt_embedding is not None else None,
             negative_prompt=[negative_prompt] * num_outputs if negative_prompt is not None else None,
             width=width,
             height=height,
@@ -133,14 +133,15 @@ class Predictor(BasePredictor):
         output_path = f"/tmp/out.png"
         image.save(output_path)
 
-        if prompt is not None:
-            latent = self.pipe._encode_prompt(prompt, "cuda", 1, False)
-            latent_path = f"/tmp/out.pt"
-            torch.save(latent.cpu(), latent_path)
-        else:
-            latent_path = f"/tmp/out.pt"
-            torch.save(prompt_embedding.cpu(), latent_path)
-            latent = prompt_embedding
+        #if prompt is not None:
+        latent = self.pipe._encode_prompt(prompt, "cuda", 1, False)
+        latent_path = f"/tmp/out.pt"
+        torch.save(latent.cpu(), latent_path)
+        
+        #else:
+        #    latent_path = f"/tmp/out.pt"
+        #    torch.save(prompt_embedding.cpu(), latent_path)
+        #    latent = prompt_embedding
 
         return [output_path, latent_path]
 
