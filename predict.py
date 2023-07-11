@@ -136,10 +136,10 @@ class Predictor(BasePredictor):
         if prompt is not None:
             latent = self.pipe._encode_prompt(prompt, "cuda", 1, False)
             latent_path = f"/tmp/out.pt"
-            torch.save(latent, latent_path)
+            torch.save(latent.cpu(), latent_path)
         else:
             latent_path = f"/tmp/out.pt"
-            torch.save(prompt_embedding, latent_path)
+            torch.save(prompt_embedding.cpu(), latent_path)
 
         return output_path, latent_path
 
