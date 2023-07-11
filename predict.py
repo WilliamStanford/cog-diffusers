@@ -110,10 +110,15 @@ class Predictor(BasePredictor):
 
         self.pipe.scheduler = make_scheduler(scheduler, self.pipe.scheduler.config)
 
+        if prompt_embedding is not None:
+            prompt = None
+            prompt_ebedding = torch.load(prompt_embedding)
+            latent = prompt_embedding
+
         generator = torch.Generator("cuda").manual_seed(seed)
         output = self.pipe(
             prompt=[prompt] * num_outputs if prompt is not None else None,
-            prompt_embeds=torch.load(prompt_embedding) if prompt_embedding is not None else None,
+            prompt_embeds=prompt_ebedding,
             negative_prompt=[negative_prompt] * num_outputs if negative_prompt is not None else None,
             width=width,
             height=height,
@@ -122,10 +127,8 @@ class Predictor(BasePredictor):
             num_inference_steps=num_inference_steps,
         )
         
-        if prompt is not None and prompt is not "":
+        if prompt is not None:
             latent = self.pipe._encode_prompt(prompt, "cuda", 1, False)
-        else:
-            latent = torch.load(prompt_embedding) 
 
         output_paths = []
         for i, sample in enumerate(output.images):
