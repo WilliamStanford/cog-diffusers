@@ -142,7 +142,7 @@ class Predictor(BasePredictor):
             torch.save(prompt_embedding.cpu(), latent_path)
             latent = prompt_embedding
 
-        return image, latent
+        return [output_path, latent_path]
 
 
 
