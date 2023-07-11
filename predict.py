@@ -113,7 +113,7 @@ class Predictor(BasePredictor):
         if prompt_embedding is not None:
             prompt = None
             prompt_embedding = torch.load(prompt_embedding)
-            latent = prompt_embedding
+
 
         generator = torch.Generator("cuda").manual_seed(seed)
         output = self.pipe(
@@ -128,14 +128,14 @@ class Predictor(BasePredictor):
         )
         
         if prompt is not None:
-            latent = self.pipe._encode_prompt(prompt, "cuda", 1, False)
+            prompt_embedding = self.pipe._encode_prompt(prompt, "cuda", 1, False)
 
         output_paths = []
         for i, sample in enumerate(output.images):
             output_path = f"/tmp/out-{i}.png"
-            latent_path = f"/tmp/out-{i}.pt"
+            latent_path = f"/tmp/out-{i}.txt"
             sample.save(output_path)
-            torch.save(latent.cpu(), latent_path)
+            torch.save(prompt_embedding.cpu(), latent_path)
             output_paths.append(Path(output_path))
             output_paths.append(Path(latent_path))
 
