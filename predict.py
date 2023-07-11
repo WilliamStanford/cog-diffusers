@@ -118,7 +118,7 @@ class Predictor(BasePredictor):
         generator = torch.Generator("cuda").manual_seed(seed)
         output = self.pipe(
             prompt=[prompt] * num_outputs if prompt is not None else None,
-            prompt_embeds=prompt_ebedding,
+            prompt_embeds=prompt_embedding,
             negative_prompt=[negative_prompt] * num_outputs if negative_prompt is not None else None,
             width=width,
             height=height,
