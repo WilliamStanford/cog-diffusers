@@ -140,8 +140,9 @@ class Predictor(BasePredictor):
         else:
             latent_path = f"/tmp/out.pt"
             torch.save(prompt_embedding.cpu(), latent_path)
+            latent = prompt_embedding
 
-        return output_path, latent_path
+        return image, latent
 
 
 
